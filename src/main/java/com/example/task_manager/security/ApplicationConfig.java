@@ -7,15 +7,13 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import javax.crypto.SecretKey;
-
 @ConfigurationProperties(prefix = "application.security")
 @NoArgsConstructor
 @Getter
 @Setter
 public class ApplicationConfig {
     private String adminCode;
-    private SecretKey secretKey;
+    private String secretKey;
     private String tokenPrefix;
     private Integer tokenExpirationAfterDays;
 

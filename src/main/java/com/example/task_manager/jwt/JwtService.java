@@ -1,6 +1,10 @@
 package com.example.task_manager.jwt;
 
+import com.example.task_manager.exceptions.InvalidTokenException;
 import com.example.task_manager.security.ApplicationConfig;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +19,7 @@ import java.util.Date;
 public class JwtService {
     private final ApplicationConfig config;
     private final SecretKey secretKey;
+    private final MyUserDetailsService userDetailsService;
 
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
@@ -24,5 +29,26 @@ public class JwtService {
                 .expiration(java.sql.Date.valueOf(LocalDate.now().plusDays(config.getTokenExpirationAfterDays())))
                 .signWith(secretKey)
                 .compact();
+    }
+
+    public UserDetails validateTokenAndExtractUser(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            String username = claims.getSubject();
+            if (username == null || username.isEmpty()) {
+                throw new InvalidTokenException("Invalid token: username is missing");
+            }
+
+            return userDetailsService.loadUserByUsername(username);
+        } catch (ExpiredJwtException e) {
+            throw new InvalidTokenException("Token expired");
+        } catch (JwtException e) {
+            throw new InvalidTokenException("Token is invalid");
+        }
     }
 }

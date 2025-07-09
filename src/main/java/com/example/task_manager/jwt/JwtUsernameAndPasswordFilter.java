@@ -1,5 +1,6 @@
 package com.example.task_manager.jwt;
 
+import com.example.task_manager.security.ApplicationConfig;
 import com.example.task_manager.user.JwtRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -11,13 +12,16 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 
 @RequiredArgsConstructor
-public class JwtUsernaneAndPasswordFilter extends UsernamePasswordAuthenticationFilter {
+public class JwtUsernameAndPasswordFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+    private final ApplicationConfig config;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
@@ -30,7 +34,7 @@ public class JwtUsernaneAndPasswordFilter extends UsernamePasswordAuthentication
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
             );
 
-            return authenticationManager.authenticate(authentication);
+            return authentication;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -40,6 +44,9 @@ public class JwtUsernaneAndPasswordFilter extends UsernamePasswordAuthentication
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
-        super.successfulAuthentication(request, response, chain, authResult);
+        UserDetails user = (UserDetails)  authResult.getPrincipal();
+        String token = jwtService.generateToken(user);
+
+        response.addHeader(config.setAuthorizationHeader(), config.getTokenPrefix() + token);
     }
 }

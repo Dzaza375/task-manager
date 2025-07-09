@@ -27,13 +27,6 @@ public class AuthController {
         authService.adminRegister(jwtRequest, adminCode);
     }
 
-    @PostMapping("/login")
-    @ResponseStatus(OK)
-    public JwtResponses login(@RequestBody @Valid JwtRequest jwtRequest) {
-        return authService.login(jwtRequest);
-    }
-
-    //POST	/api/auth/login	Логин (возврат JWT)	⬜ Открыт
     //GET	/api/tasks	Получить все задачи	✅ USER/ADMIN
     //POST	/api/tasks	Создать задачу	✅ USER/ADMIN
     //PUT	/api/tasks/{id}	Обновить задачу	✅ USER
