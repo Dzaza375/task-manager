@@ -10,8 +10,16 @@ import com.example.task_manager.user.User;
 import com.example.task_manager.user.UserDto;
 import com.example.task_manager.user.UserMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 import static com.example.task_manager.security.UserRoles.*;
 
@@ -23,6 +31,7 @@ public class AuthService {
     private final UserMapper userMapper;
     private final ApplicationConfig config;
     private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     private void saveUser(UserDto userDto, UserRoles role) {
         if (authRepo.existsByUsername(userDto.getUsername())) {
@@ -51,6 +60,14 @@ public class AuthService {
     }
 
     public JwtResponses login(UserDto userDto) {
-        return null;
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword())
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = jwtService.generateToken((UserDetails) authentication.getPrincipal());
+
+        return new JwtResponses(jwt, new LocalDateTime());
     }
 }
