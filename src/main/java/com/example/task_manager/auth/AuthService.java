@@ -6,8 +6,8 @@ import com.example.task_manager.jwt.JwtResponses;
 import com.example.task_manager.jwt.JwtService;
 import com.example.task_manager.security.ApplicationConfig;
 import com.example.task_manager.security.UserRoles;
+import com.example.task_manager.user.JwtRequest;
 import com.example.task_manager.user.User;
-import com.example.task_manager.user.UserDto;
 import com.example.task_manager.user.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import static com.example.task_manager.security.UserRoles.*;
 
@@ -33,41 +32,41 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    private void saveUser(UserDto userDto, UserRoles role) {
-        if (authRepo.existsByUsername(userDto.getUsername())) {
-            throw new UsernameAlreadyExists(String.format("Username %s is already used", userDto.getUsername()));
+    private void saveUser(JwtRequest jwtRequest, UserRoles role) {
+        if (authRepo.existsByUsername(jwtRequest.getUsername())) {
+            throw new UsernameAlreadyExists(String.format("Username %s is already used", jwtRequest.getUsername()));
         }
 
         User userToSave = new User();
-        userToSave.setUsername(userDto.getUsername());
-        userToSave.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        userToSave.setEmail(userDto.getEmail());
+        userToSave.setUsername(jwtRequest.getUsername());
+        userToSave.setPassword(passwordEncoder.encode(jwtRequest.getPassword()));
+        userToSave.setEmail(jwtRequest.getEmail());
         userToSave.setRole(role);
 
-        userMapper.userToUserDto(authRepo.save(userToSave));
+        authRepo.save(userToSave);
     }
 
-    public void register(UserDto userDto) {
-        saveUser(userDto, USER);
+    public void register(JwtRequest jwtRequest) {
+        saveUser(jwtRequest, USER);
     }
 
-    public void adminRegister(UserDto userDto, String adminCode) {
+    public void adminRegister(JwtRequest jwtRequest, String adminCode) {
         if (!config.getAdminCode().equals(adminCode)) {
             throw new IncorrectPassword("Incorrect admin password");
         }
 
-        saveUser(userDto, ADMIN);
+        saveUser(jwtRequest, ADMIN);
     }
 
-    public JwtResponses login(UserDto userDto) {
+    public JwtResponses login(JwtRequest jwtRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword())
+                new UsernamePasswordAuthenticationToken(jwtRequest.getUsername(), jwtRequest.getPassword())
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = jwtService.generateToken((UserDetails) authentication.getPrincipal());
 
-        return new JwtResponses(jwt, new LocalDateTime());
+        return new JwtResponses(jwt, LocalDateTime.now());
     }
 }

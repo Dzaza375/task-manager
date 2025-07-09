@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UserDto {
+public class JwtRequest {
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 20)
     private String username;

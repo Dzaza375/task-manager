@@ -1,10 +1,9 @@
 package com.example.task_manager.auth;
 
 import com.example.task_manager.jwt.JwtResponses;
-import com.example.task_manager.user.UserDto;
+import com.example.task_manager.user.JwtRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.*;
@@ -17,21 +16,21 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(CREATED)
-    public void register(@RequestBody @Valid UserDto userDto){
-        authService.register(userDto);
+    public void register(@RequestBody @Valid JwtRequest jwtRequest){
+        authService.register(jwtRequest);
     }
 
     @PostMapping("/admin-register")
     @ResponseStatus(CREATED)
-    public void adminRegister(@RequestBody @Valid UserDto userDto,
+    public void adminRegister(@RequestBody @Valid JwtRequest jwtRequest,
                                  @RequestParam String adminCode){
-        authService.adminRegister(userDto, adminCode);
+        authService.adminRegister(jwtRequest, adminCode);
     }
 
     @PostMapping("/login")
     @ResponseStatus(OK)
-    public JwtResponses login(@RequestBody @Valid UserDto userDto) {
-        authService.login();
+    public JwtResponses login(@RequestBody @Valid JwtRequest jwtRequest) {
+        return authService.login(jwtRequest);
     }
 
     //POST	/api/auth/login	Логин (возврат JWT)	⬜ Открыт
