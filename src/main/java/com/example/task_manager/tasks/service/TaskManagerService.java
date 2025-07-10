@@ -4,7 +4,7 @@ import com.example.task_manager.auth.repo.AuthRepo;
 import com.example.task_manager.tasks.dto.TaskDto;
 import com.example.task_manager.tasks.exception.NotEnoughRightException;
 import com.example.task_manager.tasks.exception.TaskNotFoundException;
-import com.example.task_manager.tasks.exception.UserNotExistsException;
+import com.example.task_manager.tasks.exception.UserWithUsernameNotExistsException;
 import com.example.task_manager.tasks.model.Task;
 import com.example.task_manager.tasks.repo.TaskManagerRepo;
 import com.example.task_manager.user.model.User;
@@ -25,7 +25,7 @@ public class TaskManagerService {
 
     public void createTask(TaskDto taskDto, String username) {
         User user = authRepo.findByUsername(username)
-                .orElseThrow(() -> new UserNotExistsException("User with this Id is not exists"));
+                .orElseThrow(() -> new UserWithUsernameNotExistsException(String.format("User with username %s doesn't exist", username)));
 
         Task taskToSave = new Task();
         taskToSave.setTitle(taskDto.getTitle());

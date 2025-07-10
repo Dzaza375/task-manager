@@ -53,7 +53,8 @@ public class TaskManagerController {
     @PutMapping("/{taskId}")
     @ResponseStatus(OK)
     @PreAuthorize("hasAuthority('task:write')")
-    public void updateTask(@PathVariable("taskId") Long taskId, @RequestBody @Valid TaskDto taskDto) {
+    public void updateTask(@PathVariable("taskId") Long taskId,
+                           @RequestBody @Valid TaskDto taskDto) {
         taskManagerService.updateTask(
                 taskId,
                 taskDto,
