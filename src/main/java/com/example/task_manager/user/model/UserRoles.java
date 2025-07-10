@@ -1,4 +1,4 @@
-package com.example.task_manager.security;
+package com.example.task_manager.user.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.example.task_manager.security.UserPermissions.*;
+import static com.example.task_manager.user.model.UserPermissions.*;
 
 @RequiredArgsConstructor
 @Getter

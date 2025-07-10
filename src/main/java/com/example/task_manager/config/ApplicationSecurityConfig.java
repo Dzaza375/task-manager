@@ -1,8 +1,8 @@
-package com.example.task_manager.security;
+package com.example.task_manager.config;
 
-import com.example.task_manager.jwt.JwtService;
-import com.example.task_manager.jwt.JwtTokenVerifier;
-import com.example.task_manager.jwt.JwtUsernameAndPasswordFilter;
+import com.example.task_manager.jwt.service.JwtService;
+import com.example.task_manager.jwt.filter.JwtTokenVerifier;
+import com.example.task_manager.jwt.filter.JwtUsernameAndPasswordFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

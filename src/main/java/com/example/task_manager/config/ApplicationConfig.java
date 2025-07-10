@@ -1,4 +1,4 @@
-package com.example.task_manager.security;
+package com.example.task_manager.config;
 
 import com.google.common.net.HttpHeaders;
 import lombok.Getter;

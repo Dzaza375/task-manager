@@ -1,6 +1,5 @@
-package com.example.task_manager.user;
+package com.example.task_manager.user.model;
 
-import com.example.task_manager.security.UserRoles;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

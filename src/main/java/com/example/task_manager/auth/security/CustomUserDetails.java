@@ -1,5 +1,6 @@
-package com.example.task_manager.user;
+package com.example.task_manager.auth.security;
 
+import com.example.task_manager.user.model.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

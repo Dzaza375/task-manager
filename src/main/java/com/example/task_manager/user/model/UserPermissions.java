@@ -1,4 +1,4 @@
-package com.example.task_manager.security;
+package com.example.task_manager.user.model;
 
 public enum UserPermissions {
     TASK_READ,

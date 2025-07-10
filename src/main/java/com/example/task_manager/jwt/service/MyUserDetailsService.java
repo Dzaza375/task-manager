@@ -1,8 +1,8 @@
-package com.example.task_manager.jwt;
+package com.example.task_manager.jwt.service;
 
-import com.example.task_manager.auth.AuthRepo;
-import com.example.task_manager.user.CustomUserDetails;
-import com.example.task_manager.user.User;
+import com.example.task_manager.auth.repo.AuthRepo;
+import com.example.task_manager.auth.security.CustomUserDetails;
+import com.example.task_manager.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

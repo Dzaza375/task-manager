@@ -1,6 +1,7 @@
-package com.example.task_manager.jwt;
+package com.example.task_manager.jwt.filter;
 
-import com.example.task_manager.security.ApplicationConfig;
+import com.example.task_manager.config.ApplicationConfig;
+import com.example.task_manager.jwt.service.JwtService;
 import com.google.common.base.Strings;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

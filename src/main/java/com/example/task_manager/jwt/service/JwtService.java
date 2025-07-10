@@ -1,7 +1,7 @@
-package com.example.task_manager.jwt;
+package com.example.task_manager.jwt.service;
 
-import com.example.task_manager.exceptions.InvalidTokenException;
-import com.example.task_manager.security.ApplicationConfig;
+import com.example.task_manager.jwt.exception.InvalidTokenException;
+import com.example.task_manager.config.ApplicationConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;

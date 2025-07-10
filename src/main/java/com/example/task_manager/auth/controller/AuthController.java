@@ -1,7 +1,7 @@
-package com.example.task_manager.auth;
+package com.example.task_manager.auth.controller;
 
-import com.example.task_manager.jwt.JwtResponses;
-import com.example.task_manager.user.JwtRequest;
+import com.example.task_manager.auth.service.AuthService;
+import com.example.task_manager.user.dto.JwtRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +26,4 @@ public class AuthController {
                                  @RequestParam String adminCode){
         authService.adminRegister(jwtRequest, adminCode);
     }
-
-    //GET	/api/tasks	Получить все задачи	✅ USER/ADMIN
-    //POST	/api/tasks	Создать задачу	✅ USER/ADMIN
-    //PUT	/api/tasks/{id}	Обновить задачу	✅ USER
-    //DELETE	/api/tasks/{id}	Удалить задачу	✅ ADMIN
 }

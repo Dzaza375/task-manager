@@ -1,16 +1,17 @@
-package com.example.task_manager.auth;
+package com.example.task_manager.auth.service;
 
-import com.example.task_manager.exceptions.IncorrectPasswordException;
-import com.example.task_manager.exceptions.UsernameAlreadyExistsException;
-import com.example.task_manager.security.ApplicationConfig;
-import com.example.task_manager.security.UserRoles;
-import com.example.task_manager.user.JwtRequest;
-import com.example.task_manager.user.User;
+import com.example.task_manager.auth.repo.AuthRepo;
+import com.example.task_manager.auth.exception.IncorrectPasswordException;
+import com.example.task_manager.auth.exception.UsernameAlreadyExistsException;
+import com.example.task_manager.config.ApplicationConfig;
+import com.example.task_manager.user.model.UserRoles;
+import com.example.task_manager.user.dto.JwtRequest;
+import com.example.task_manager.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static com.example.task_manager.security.UserRoles.*;
+import static com.example.task_manager.user.model.UserRoles.*;
 
 @Service
 @RequiredArgsConstructor

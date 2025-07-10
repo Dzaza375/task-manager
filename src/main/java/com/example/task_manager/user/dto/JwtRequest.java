@@ -1,4 +1,4 @@
-package com.example.task_manager.user;
+package com.example.task_manager.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
