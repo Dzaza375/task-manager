@@ -7,12 +7,17 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,26 +34,5 @@ public class JwtService {
                 .expiration(java.sql.Date.valueOf(LocalDate.now().plusDays(config.getTokenExpirationAfterDays())))
                 .signWith(secretKey)
                 .compact();
-    }
-
-    public UserDetails validateTokenAndExtractUser(String token) {
-        try {
-            Claims claims = Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-
-            String username = claims.getSubject();
-            if (username == null || username.isEmpty()) {
-                throw new InvalidTokenException("Invalid token: username is missing");
-            }
-
-            return userDetailsService.loadUserByUsername(username);
-        } catch (ExpiredJwtException e) {
-            throw new InvalidTokenException("Token expired");
-        } catch (JwtException e) {
-            throw new InvalidTokenException("Token is invalid");
-        }
     }
 }

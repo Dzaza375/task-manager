@@ -24,7 +24,4 @@ public class TaskDto {
 
     @NotNull(message = "Status is required")
     private TaskStatus status;
-
-    @NotNull(message = "Assigned user ID is required")
-    private Long assignedToUserId;
 }

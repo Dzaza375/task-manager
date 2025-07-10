@@ -21,7 +21,7 @@ public class AuthController {
     }
 
     @PostMapping("/admin-register")
-    @ResponseStatus(CREATED)
+    @ResponseStatus(OK)
     public void adminRegister(@RequestBody @Valid JwtRequest jwtRequest,
                                  @RequestParam String adminCode){
         authService.adminRegister(jwtRequest, adminCode);

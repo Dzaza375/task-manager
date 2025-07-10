@@ -17,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import javax.crypto.SecretKey;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -24,6 +26,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class ApplicationSecurityConfig {
     private final JwtService jwtService;
     private final ApplicationConfig config;
+    private final SecretKey secretKey;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
@@ -38,7 +41,7 @@ public class ApplicationSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .addFilter(jwtFilter)
-                .addFilterAfter(new JwtTokenVerifier(config, jwtService), JwtUsernameAndPasswordFilter.class)
+                .addFilterAfter(new JwtTokenVerifier(config, secretKey), JwtUsernameAndPasswordFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
