@@ -2,6 +2,7 @@ package com.example.task_manager.tasks.service;
 
 import com.example.task_manager.auth.repo.AuthRepo;
 import com.example.task_manager.tasks.dto.TaskDto;
+import com.example.task_manager.tasks.exception.TaskNotFoundException;
 import com.example.task_manager.tasks.exception.UserNotExistsException;
 import com.example.task_manager.tasks.model.Task;
 import com.example.task_manager.tasks.repo.TaskManagerRepo;
@@ -33,5 +34,12 @@ public class TaskManagerService {
         taskToSave.setAssignedTo(user);
 
         taskManagerRepo.save(taskToSave);
+    }
+
+    public void updateTask(Long taskId, TaskDto taskDto) {
+        Task task = taskManagerRepo.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException("There is not task with id " + taskId));
+
+        task
     }
 }

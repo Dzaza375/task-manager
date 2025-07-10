@@ -23,19 +23,23 @@ public class TaskManagerController {
     private final TaskManagerService taskManagerService;
     private final TaskMapper taskMapper;
 
-    private Authentication getAuthentication() {
-        return SecurityContextHolder.getContext().getAuthentication();
+    private String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
+    }
+
+    private boolean checkAdminRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
     }
 
     @GetMapping
     @ResponseStatus(OK)
     @PreAuthorize("hasAuthority('task:read')")
     public List<?> getAllTasks() {
-        boolean isAdmin = getAuthentication().getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-
         List<Task> allTasks = taskManagerService.getAllTasks();
-        if (isAdmin) return allTasks;
+        if (checkAdminRole()) return allTasks;
         return taskMapper.taskDtos(allTasks);
     }
 
@@ -43,8 +47,15 @@ public class TaskManagerController {
     @ResponseStatus(CREATED)
     @PreAuthorize("hasAuthority('task:write')")
     public void createNewTask(@RequestBody @Valid TaskDto taskDto) {
-        String username = getAuthentication().getName();
+        String username = getCurrentUsername();
         taskManagerService.createTask(taskDto, username);
+    }
+
+    @PutMapping("/{taskId}")
+    @ResponseStatus(OK)
+    @PreAuthorize("hasAuthority('task:write')")
+    public void updateTask(@PathVariable("taskId") Long taskId, @RequestBody @Valid TaskDto taskDto) {
+        taskManagerService.updateTask(taskId, taskDto);
     }
 
     //PUT	/api/tasks/{id}	Обновить задачу	✅ USER
