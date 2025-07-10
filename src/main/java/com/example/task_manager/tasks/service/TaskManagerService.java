@@ -2,6 +2,7 @@ package com.example.task_manager.tasks.service;
 
 import com.example.task_manager.auth.repo.AuthRepo;
 import com.example.task_manager.tasks.dto.TaskDto;
+import com.example.task_manager.tasks.exception.NotEnoughRightException;
 import com.example.task_manager.tasks.exception.TaskNotFoundException;
 import com.example.task_manager.tasks.exception.UserNotExistsException;
 import com.example.task_manager.tasks.model.Task;
@@ -36,10 +37,22 @@ public class TaskManagerService {
         taskManagerRepo.save(taskToSave);
     }
 
-    public void updateTask(Long taskId, TaskDto taskDto) {
-        Task task = taskManagerRepo.findById(taskId)
+    public void updateTask(Long taskId,
+                           TaskDto taskDto,
+                           String username,
+                           boolean isAdmin) {
+        Task taskNeededToUpdate = taskManagerRepo.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("There is not task with id " + taskId));
 
-        task
+        if (!isAdmin && !username.equals(taskNeededToUpdate.getAssignedTo().getUsername())) {
+            throw new NotEnoughRightException("You can't update this task!");
+        }
+
+        taskNeededToUpdate.setTitle(taskDto.getTitle());
+        taskNeededToUpdate.setDescription(taskDto.getDescription());
+        taskNeededToUpdate.setDueDate(taskDto.getDueDate());
+        taskNeededToUpdate.setStatus(taskDto.getStatus());
+
+        taskManagerRepo.save(taskNeededToUpdate);
     }
 }

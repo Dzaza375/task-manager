@@ -4,7 +4,6 @@ import com.example.task_manager.tasks.dto.TaskDto;
 import com.example.task_manager.tasks.mapper.TaskMapper;
 import com.example.task_manager.tasks.model.Task;
 import com.example.task_manager.tasks.service.TaskManagerService;
-import com.example.task_manager.user.model.UserRoles;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -55,7 +54,12 @@ public class TaskManagerController {
     @ResponseStatus(OK)
     @PreAuthorize("hasAuthority('task:write')")
     public void updateTask(@PathVariable("taskId") Long taskId, @RequestBody @Valid TaskDto taskDto) {
-        taskManagerService.updateTask(taskId, taskDto);
+        taskManagerService.updateTask(
+                taskId,
+                taskDto,
+                getCurrentUsername(),
+                checkAdminRole()
+        );
     }
 
     //PUT	/api/tasks/{id}	Обновить задачу	✅ USER
