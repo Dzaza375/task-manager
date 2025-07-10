@@ -17,7 +17,7 @@ class AuthRepoTest {
     @Autowired
     private AuthRepo testAuthRepo;
 
-    private final String TEST_USERNAME = "tom";
+    private static final String TEST_USERNAME = "tom";
 
     private User createTestUser() {
         User user = new User();
