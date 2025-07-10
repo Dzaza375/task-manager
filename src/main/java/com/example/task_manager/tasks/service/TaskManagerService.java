@@ -41,18 +41,29 @@ public class TaskManagerService {
                            TaskDto taskDto,
                            String username,
                            boolean isAdmin) {
-        Task taskNeededToUpdate = taskManagerRepo.findById(taskId)
+        Task taskToUpdate = taskManagerRepo.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("There is not task with id " + taskId));
 
-        if (!isAdmin && !username.equals(taskNeededToUpdate.getAssignedTo().getUsername())) {
+        if (!isAdmin && !username.equals(taskToUpdate.getAssignedTo().getUsername())) {
             throw new NotEnoughRightException("You can't update this task!");
         }
 
-        taskNeededToUpdate.setTitle(taskDto.getTitle());
-        taskNeededToUpdate.setDescription(taskDto.getDescription());
-        taskNeededToUpdate.setDueDate(taskDto.getDueDate());
-        taskNeededToUpdate.setStatus(taskDto.getStatus());
+        taskToUpdate.setTitle(taskDto.getTitle());
+        taskToUpdate.setDescription(taskDto.getDescription());
+        taskToUpdate.setDueDate(taskDto.getDueDate());
+        taskToUpdate.setStatus(taskDto.getStatus());
 
-        taskManagerRepo.save(taskNeededToUpdate);
+        taskManagerRepo.save(taskToUpdate);
+    }
+
+    public void deleteTask(Long taskId, String username, boolean isAdmin) {
+        Task taskToDelete = taskManagerRepo.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException("There is not task with id " + taskId));
+
+        if (!isAdmin && !username.equals(taskToDelete.getAssignedTo().getUsername())) {
+            throw new NotEnoughRightException("You can't delete this task!");
+        }
+
+        taskManagerRepo.delete(taskToDelete);
     }
 }

@@ -62,6 +62,10 @@ public class TaskManagerController {
         );
     }
 
-    //PUT	/api/tasks/{id}	Обновить задачу	✅ USER
-    //DELETE	/api/tasks/{id}	Удалить задачу	✅ ADMIN
+    @DeleteMapping("/{taskId}")
+    @ResponseStatus(NO_CONTENT)
+    @PreAuthorize("hasAuthority('task:write')")
+    public void deleteTask(@PathVariable("taskId") Long taskId) {
+        taskManagerService.deleteTask(taskId, getCurrentUsername(), checkAdminRole());
+    }
 }
