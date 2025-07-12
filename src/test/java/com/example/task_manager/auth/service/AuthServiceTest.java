@@ -48,7 +48,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void testRegister() {
+    void register_shouldSaveNewUser_whenUsernameDoesNotExist() {
         when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn(ENCODED_PASSWORD);
 
         authService.register(jwtRequest);
@@ -64,7 +64,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void testUsernameAlreadyExists() {
+    void register_shouldThrowUsernameAlreadyExistsException_whenUsernameIsAlreadyTaken() {
         when(authRepo.existsByUsername(TEST_USERNAME))
                 .thenReturn(true);
 
@@ -76,7 +76,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void adminRegister() {
+    void adminRegister_shouldSaveNewAdminUser_whenAdminCodeIsCorrect() {
         when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn(ENCODED_PASSWORD);
         when(config.getAdminCode()).thenReturn(CORRECT_ADMIN_CODE);
 
@@ -93,7 +93,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void testIncorrectAdminPassword() {
+    void adminRegister_shouldThrowIncorrectPasswordException_whenAdminCodeIsIncorrect() {
         when(config.getAdminCode()).thenReturn(CORRECT_ADMIN_CODE);
 
         assertThatThrownBy(() -> authService.adminRegister(jwtRequest, "incorrect code"))

@@ -46,13 +46,13 @@ class AdminServiceTest {
     }
 
     @Test
-    void testGetAllUsers() {
+    void getAllUsers_shouldReturnAllUsers() {
         adminService.getAllUsers();
         verify(authRepo).findAll();
     }
 
     @Test
-    void testUpdateUserInformation() {
+    void updateUserInformation_shouldUpdateUserById() {
         when(authRepo.findById(anyLong())).thenReturn(Optional.of(testUser));
 
         adminService.updateUserInformation(testUser.getId(), testUser);
@@ -69,7 +69,7 @@ class AdminServiceTest {
     }
 
     @Test
-    void testUpdateInformationThrowUserByIdNotFound() {
+    void updateUserInformation_shouldThrowUserWithIdNotExistsException_whenUserIdNotExists() {
         when(authRepo.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> adminService.updateUserInformation(testUser.getId(), testUser))
@@ -80,7 +80,7 @@ class AdminServiceTest {
     }
 
     @Test
-    void deleteUser() {
+    void deleteUser_shouldDeleteUser_byId() {
         when(authRepo.findById(anyLong())).thenReturn(Optional.of(testUser));
 
         adminService.deleteUser(TEST_ID, "admin name");
@@ -94,7 +94,7 @@ class AdminServiceTest {
     }
 
     @Test
-    void testDeleteUserThrowUserByIdNotFound() {
+    void deleteUser_shouldThrowUserWithIdNotExistsException_whenUserIdNotExists() {
         when(authRepo.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> adminService.deleteUser(testUser.getId(), "admin name"))
@@ -105,7 +105,7 @@ class AdminServiceTest {
     }
 
     @Test
-    void testAdminDeleteHimself() {
+    void deleteUser_shouldThrowSelfDeleteException_whenUsernameEqualsAdminsUsername() {
         when(authRepo.findById(anyLong())).thenReturn(Optional.of(testUser));
 
         assertThatThrownBy(() -> adminService.deleteUser(TEST_ID, TEST_USERNAME))

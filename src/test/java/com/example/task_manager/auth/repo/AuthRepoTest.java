@@ -36,17 +36,22 @@ class AuthRepoTest {
     }
 
     @Test
-    void testExistsByUsername() {
+    void existsByUsername_shouldReturnTrue() {
         User user = createTestUser();
         testAuthRepo.save(user);
 
         boolean exists = testAuthRepo.existsByUsername(TEST_USERNAME);
-
         assertThat(exists).isTrue();
     }
 
     @Test
-    void testFindByUsername() {
+    void existsByUsername_shouldReturnFalse() {
+        boolean exists = testAuthRepo.existsByUsername("nonexistent");
+        assertThat(exists).isFalse();
+    }
+
+    @Test
+    void findByUsername_shouldReturnTestUsername() {
         User user = createTestUser();
         testAuthRepo.save(user);
 
@@ -54,5 +59,11 @@ class AuthRepoTest {
                 .orElseThrow();
 
         assertThat(foundedUser.getUsername()).isEqualTo(user.getUsername());
+    }
+
+    @Test
+    void findByUsername_shouldReturnEmptyOptional_whenUserDoesNotExist() {
+        var result = testAuthRepo.findByUsername("nonexistent");
+        assertThat(result).isEmpty();
     }
 }
