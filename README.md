@@ -13,6 +13,7 @@ A RESTful web service for managing tasks with role-based access control using JW
 - Lombok
 - PostgreSQL
 - MapStruct
+- JUnit 5 + Mockito (for testing)
 
 ## Roles and Permissions
 
@@ -99,6 +100,26 @@ mvn clean install
 3. Run the application:
 ```
 mvn spring-boot:run
+```
+
+## Running Tests
+
+The project includes unit tests written with JUnit 5 and Mockito, covering:
+- User authentication service logic
+- Task creation, update, deletion, access control
+- Service for admins
+- Exception handling and validation
+
+### To run the tests:
+
+```
+mvn test
+```
+
+### Test classes are located under:
+
+```
+src/test/java/com/example/task_manager
 ```
 
 ## Notes
