@@ -1,5 +1,7 @@
 package com.example.task_manager.auth.service;
 
+import com.example.task_manager.auth.exception.IncorrectPasswordException;
+import com.example.task_manager.auth.exception.UsernameAlreadyExistsException;
 import com.example.task_manager.auth.repo.AuthRepo;
 import com.example.task_manager.config.ApplicationConfig;
 import com.example.task_manager.user.dto.JwtRequest;
@@ -17,9 +19,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -43,12 +45,12 @@ class AuthServiceTest {
         jwtRequest.setUsername(TEST_USERNAME);
         jwtRequest.setPassword(TEST_PASSWORD);
         jwtRequest.setEmail(TEST_EMAIL);
-
-        when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn(ENCODED_PASSWORD);
     }
 
     @Test
     void testRegister() {
+        when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn(ENCODED_PASSWORD);
+
         authService.register(jwtRequest);
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
@@ -62,7 +64,41 @@ class AuthServiceTest {
     }
 
     @Test
-    @Disabled
+    void testUsernameAlreadyExists() {
+        when(authRepo.existsByUsername(TEST_USERNAME))
+                .thenReturn(true);
+
+        assertThatThrownBy(() -> authService.register(jwtRequest))
+                .isInstanceOf(UsernameAlreadyExistsException.class)
+                .hasMessageContaining(TEST_USERNAME);
+
+        verify(authRepo, never()).save(any());
+    }
+
+    @Test
     void adminRegister() {
+        when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn(ENCODED_PASSWORD);
+        when(config.getAdminCode()).thenReturn("pass777");
+
+        authService.adminRegister(jwtRequest, "pass777");
+
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(authRepo).save(captor.capture());
+
+        User savedAdminUser = captor.getValue();
+        assertThat(savedAdminUser.getUsername()).isEqualTo(TEST_USERNAME);
+        assertThat(savedAdminUser.getPassword()).isEqualTo(ENCODED_PASSWORD);
+        assertThat(savedAdminUser.getEmail()).isEqualTo(TEST_EMAIL);
+        assertThat(savedAdminUser.getRole()).isEqualTo(UserRoles.ADMIN);
+    }
+
+    @Test
+    void testIncorrectAdminPassword() {
+        when(config.getAdminCode()).thenReturn("pass777");
+
+        assertThatThrownBy(() -> authService.adminRegister(jwtRequest, "incorrect code"))
+                .isInstanceOf(IncorrectPasswordException.class);
+
+        verify(authRepo, never()).save(any());
     }
 }
