@@ -31,11 +31,11 @@ class AuthServiceTest {
 
     @InjectMocks private AuthService authService;
 
-    private final String TEST_USERNAME = "tom";
-    private final String TEST_PASSWORD = "pass1234";
-    private final String TEST_EMAIL = "tom@gmail.com";
-    private final String ENCODED_PASSWORD = "encoded_pass";
-    private final String CORRECT_ADMIN_CODE = "pass777";
+    private static final String TEST_USERNAME = "tom";
+    private static final String TEST_PASSWORD = "pass1234";
+    private static final String TEST_EMAIL = "tom@gmail.com";
+    private static final String ENCODED_PASSWORD = "encoded_pass";
+    private static final String CORRECT_ADMIN_CODE = "pass777";
 
     private JwtRequest jwtRequest;
 
@@ -78,7 +78,7 @@ class AuthServiceTest {
     @Test
     void adminRegister() {
         when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn(ENCODED_PASSWORD);
-        when(config.getAdminCode()).thenReturn("pass777");
+        when(config.getAdminCode()).thenReturn(CORRECT_ADMIN_CODE);
 
         authService.adminRegister(jwtRequest, "pass777");
 
@@ -94,7 +94,7 @@ class AuthServiceTest {
 
     @Test
     void testIncorrectAdminPassword() {
-        when(config.getAdminCode()).thenReturn("pass777");
+        when(config.getAdminCode()).thenReturn(CORRECT_ADMIN_CODE);
 
         assertThatThrownBy(() -> authService.adminRegister(jwtRequest, "incorrect code"))
                 .isInstanceOf(IncorrectPasswordException.class);
