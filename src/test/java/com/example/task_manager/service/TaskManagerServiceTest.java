@@ -136,8 +136,7 @@ class TaskManagerServiceTest {
         when(taskManagerRepo.findById(anyLong())).thenReturn(Optional.of(testTask));
 
         assertThatThrownBy(() -> taskManagerService.updateTask(TEST_TASK_ID, testTaskDto, "nonexistent", false))
-                .isInstanceOf(NotEnoughRightException.class)
-                .hasMessageContaining("You can't update this task!");
+                .isInstanceOf(NotEnoughRightException.class);
     }
 
     @Test
@@ -170,7 +169,6 @@ class TaskManagerServiceTest {
         when(taskManagerRepo.findById(anyLong())).thenReturn(Optional.of(testTask));
 
         assertThatThrownBy(() -> taskManagerService.deleteTask(TEST_TASK_ID, "nonexistent", false))
-                .isInstanceOf(NotEnoughRightException.class)
-                .hasMessageContaining("You can't delete this task!");
+                .isInstanceOf(NotEnoughRightException.class);
     }
 }

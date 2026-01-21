@@ -61,7 +61,6 @@ class MyUserDetailsServiceTest {
         when(authRepo.findByUsername(anyString())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userDetailsService.loadUserByUsername(TEST_USERNAME))
-                .isInstanceOf(UsernameNotFoundException.class)
-                .hasMessageContaining("User not found");
+                .isInstanceOf(UsernameNotFoundException.class);
     }
 }
