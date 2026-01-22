@@ -10,10 +10,12 @@ import com.example.task_manager.repo.TaskManagerRepo;
 import com.example.task_manager.model.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class TaskManagerService {
     private final TaskManagerRepo taskManagerRepo;
@@ -52,8 +54,6 @@ public class TaskManagerService {
         taskToUpdate.setDescription(taskDto.getDescription());
         taskToUpdate.setDueDate(taskDto.getDueDate());
         taskToUpdate.setStatus(taskDto.getStatus());
-
-        taskManagerRepo.save(taskToUpdate);
     }
 
     public void deleteTask(Long taskId, String username, boolean isAdmin) {

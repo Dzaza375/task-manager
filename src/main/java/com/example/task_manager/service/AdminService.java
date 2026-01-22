@@ -7,10 +7,12 @@ import com.example.task_manager.model.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AdminService {
     private final AuthRepo authRepo;
@@ -27,8 +29,6 @@ public class AdminService {
         userToUpdate.setUsername(user.getUsername());
         userToUpdate.setPassword(passwordEncoder.encode(user.getPassword()));
         userToUpdate.setEmail(user.getEmail());
-
-        authRepo.save(userToUpdate);
     }
 
     public void deleteUser(Long userId, String adminName) {
