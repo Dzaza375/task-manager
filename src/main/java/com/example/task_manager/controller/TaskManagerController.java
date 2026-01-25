@@ -1,11 +1,14 @@
 package com.example.task_manager.controller;
 
 import com.example.task_manager.dto.task.TaskDto;
+import com.example.task_manager.exception.advice.GlobalExceptionHandler;
 import com.example.task_manager.mapper.TaskMapper;
 import com.example.task_manager.model.task.Task;
 import com.example.task_manager.service.TaskManagerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +23,6 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 public class TaskManagerController {
     private final TaskManagerService taskManagerService;
-    private final TaskMapper taskMapper;
 
     private String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -36,9 +38,8 @@ public class TaskManagerController {
     @GetMapping
     @ResponseStatus(OK)
     @PreAuthorize("hasAuthority('task:read')")
-    public List<?> getAllTasks() {
-        List<Task> allTasks = taskManagerService.getAllTasks();
-        return taskMapper.taskDtos(allTasks);
+    public List<TaskDto> getAllTasks() {
+        return taskManagerService.getAllTasks();
     }
 
     @PostMapping

@@ -1,5 +1,7 @@
 package com.example.task_manager.controller;
 
+import com.example.task_manager.dto.user.UserDto;
+import com.example.task_manager.mapper.UserMapper;
 import com.example.task_manager.service.AdminService;
 import com.example.task_manager.model.user.User;
 import jakarta.validation.Valid;
@@ -27,7 +29,7 @@ public class AdminController {
     @GetMapping
     @ResponseStatus(OK)
     @PreAuthorize("hasAuthority('user:read')")
-    public List<User> getUsers() {
+    public List<UserDto> getUsers() {
         return adminService.getAllUsers();
     }
 

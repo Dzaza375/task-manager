@@ -2,7 +2,7 @@ package com.example.task_manager.security.filter;
 
 import com.example.task_manager.config.ApplicationConfig;
 import com.example.task_manager.service.JwtService;
-import com.example.task_manager.dto.user.JwtRequest;
+import com.example.task_manager.dto.user.UserDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,8 +28,8 @@ public class JwtUsernameAndPasswordFilter extends UsernamePasswordAuthentication
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
         try {
-            JwtRequest authRequest = new ObjectMapper()
-                    .readValue(request.getInputStream(), JwtRequest.class);
+            UserDto authRequest = new ObjectMapper()
+                    .readValue(request.getInputStream(), UserDto.class);
 
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())

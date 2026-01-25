@@ -1,7 +1,9 @@
 package com.example.task_manager.service;
 
+import com.example.task_manager.dto.user.UserDto;
 import com.example.task_manager.exception.SelfDeleteException;
 import com.example.task_manager.exception.UserWithIdNotExistsException;
+import com.example.task_manager.mapper.UserMapper;
 import com.example.task_manager.repo.AuthRepo;
 import com.example.task_manager.model.user.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.example.task_manager.model.user.UserRoles.*;
@@ -25,6 +28,7 @@ import static org.mockito.Mockito.*;
 class AdminServiceTest {
     @Mock private AuthRepo authRepo;
     @Mock private PasswordEncoder passwordEncoder;
+    @Mock private UserMapper userMapper;
 
     @InjectMocks private AdminService adminService;
 
@@ -47,25 +51,31 @@ class AdminServiceTest {
 
     @Test
     void getAllUsers_shouldReturnAllUsers() {
-        adminService.getAllUsers();
+        List<User> users = List.of(new User(), new User());
+        List<UserDto> userDtos = List.of(new UserDto(), new UserDto());
+
+        when(authRepo.findAll()).thenReturn(users);
+        when(userMapper.userDtos(users)).thenReturn(userDtos);
+
+        assertThat(adminService.getAllUsers()).isEqualTo(userDtos);
         verify(authRepo).findAll();
+        verify(userMapper).userDtos(users);
     }
 
     @Test
     void updateUserInformation_shouldUpdateUserById() {
         when(authRepo.findById(anyLong())).thenReturn(Optional.of(testUser));
+        when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn("encodedPassword");
 
         adminService.updateUserInformation(testUser.getId(), testUser);
 
-        ArgumentCaptor<User> captor =
-                ArgumentCaptor.forClass(User.class);
+        assertThat(testUser.getUsername()).isEqualTo(TEST_USERNAME);
+        assertThat(testUser.getEmail()).isEqualTo(TEST_EMAIL);
+        assertThat(testUser.getPassword()).isEqualTo("encodedPassword");
 
-        verify(authRepo).save(captor.capture());
-
-        assertThat(captor.getValue().getUsername()).isEqualTo(TEST_USERNAME);
-        assertThat(captor.getValue().getEmail()).isEqualTo(TEST_EMAIL);
-
+        verify(authRepo).findById(testUser.getId());
         verify(passwordEncoder).encode(TEST_PASSWORD);
+        verify(authRepo, never()).save(any());
     }
 
     @Test

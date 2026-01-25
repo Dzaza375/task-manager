@@ -1,7 +1,5 @@
-package com.example.task_manager.exception.advice;
+package com.example.task_manager.exception;
 
-import com.example.task_manager.exception.BusinessException;
-import com.example.task_manager.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
 
 public class UsernameNotFound extends BusinessException {

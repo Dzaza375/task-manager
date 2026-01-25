@@ -5,7 +5,7 @@ import com.example.task_manager.exception.IncorrectPasswordException;
 import com.example.task_manager.exception.UsernameAlreadyExistsException;
 import com.example.task_manager.config.ApplicationConfig;
 import com.example.task_manager.model.user.UserRoles;
-import com.example.task_manager.dto.user.JwtRequest;
+import com.example.task_manager.dto.user.UserDto;
 import com.example.task_manager.model.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,29 +22,29 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final ApplicationConfig config;
 
-    private void saveUser(JwtRequest jwtRequest, UserRoles role) {
-        if (authRepo.existsByUsername(jwtRequest.getUsername())) {
-            throw new UsernameAlreadyExistsException(jwtRequest.getUsername());
+    private void saveUser(UserDto userDTO, UserRoles role) {
+        if (authRepo.existsByUsername(userDTO.getUsername())) {
+            throw new UsernameAlreadyExistsException(userDTO.getUsername());
         }
 
         User userToSave = new User();
-        userToSave.setUsername(jwtRequest.getUsername());
-        userToSave.setPassword(passwordEncoder.encode(jwtRequest.getPassword()));
-        userToSave.setEmail(jwtRequest.getEmail());
+        userToSave.setUsername(userDTO.getUsername());
+        userToSave.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        userToSave.setEmail(userDTO.getEmail());
         userToSave.setRole(role);
 
         authRepo.save(userToSave);
     }
 
-    public void register(JwtRequest jwtRequest) {
-        saveUser(jwtRequest, USER);
+    public void register(UserDto userDTO) {
+        saveUser(userDTO, USER);
     }
 
-    public void adminRegister(JwtRequest jwtRequest, String adminCode) {
+    public void adminRegister(UserDto userDTO, String adminCode) {
         if (!config.getAdminCode().equals(adminCode)) {
             throw new IncorrectPasswordException();
         }
 
-        saveUser(jwtRequest, ADMIN);
+        saveUser(userDTO, ADMIN);
     }
 }

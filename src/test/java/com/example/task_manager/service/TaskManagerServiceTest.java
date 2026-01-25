@@ -1,5 +1,6 @@
 package com.example.task_manager.service;
 
+import com.example.task_manager.mapper.TaskMapper;
 import com.example.task_manager.repo.AuthRepo;
 import com.example.task_manager.dto.task.TaskDto;
 import com.example.task_manager.exception.NotEnoughRightException;
@@ -18,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static com.example.task_manager.model.user.UserRoles.USER;
@@ -30,6 +32,7 @@ import static org.mockito.Mockito.*;
 class TaskManagerServiceTest {
     @Mock private TaskManagerRepo taskManagerRepo;
     @Mock private AuthRepo authRepo;
+    @Mock private TaskMapper taskMapper;
 
     @InjectMocks
     TaskManagerService taskManagerService;
@@ -75,8 +78,15 @@ class TaskManagerServiceTest {
 
     @Test
     void getAllTasks_shouldReturnListOfAllTasks() {
-        taskManagerService.getAllTasks();
+        List<Task> tasks = List.of(new Task(), new Task());
+        List<TaskDto> taskDtos = List.of(new TaskDto(), new TaskDto());
+
+        when(taskManagerRepo.findAll()).thenReturn(tasks);
+        when(taskMapper.taskDtos(tasks)).thenReturn(taskDtos);
+
+        assertThat(taskManagerService.getAllTasks()).isEqualTo(taskDtos);
         verify(taskManagerRepo).findAll();
+        verify(taskMapper).taskDtos(tasks);
     }
 
     @Test
@@ -112,14 +122,13 @@ class TaskManagerServiceTest {
 
         taskManagerService.updateTask(TEST_TASK_ID, testTaskDto, TEST_USERNAME, true);
 
-        ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
-        verify(taskManagerRepo).save(captor.capture());
-        Task updatedTask = captor.getValue();
+        assertThat(testTask.getTitle()).isEqualTo(TEST_TITLE);
+        assertThat(testTask.getDescription()).isEqualTo(TEST_DESCRIPTION);
+        assertThat(testTask.getDueDate()).isEqualTo(TEST_DUE_DATE);
+        assertThat(testTask.getStatus()).isEqualTo(TEST_STATUS);
 
-        assertThat(updatedTask.getTitle()).isEqualTo(TEST_TITLE);
-        assertThat(updatedTask.getDescription()).isEqualTo(TEST_DESCRIPTION);
-        assertThat(updatedTask.getDueDate()).isEqualTo(TEST_DUE_DATE);
-        assertThat(updatedTask.getStatus()).isEqualTo(TEST_STATUS);
+        verify(taskManagerRepo).findById(TEST_TASK_ID);
+        verify(taskManagerRepo, never()).save(any());
     }
 
     @Test

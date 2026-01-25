@@ -4,7 +4,7 @@ import com.example.task_manager.exception.IncorrectPasswordException;
 import com.example.task_manager.exception.UsernameAlreadyExistsException;
 import com.example.task_manager.repo.AuthRepo;
 import com.example.task_manager.config.ApplicationConfig;
-import com.example.task_manager.dto.user.JwtRequest;
+import com.example.task_manager.dto.user.UserDto;
 import com.example.task_manager.model.user.User;
 import com.example.task_manager.model.user.UserRoles;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,21 +34,21 @@ class AuthServiceTest {
     private static final String ENCODED_PASSWORD = "encoded_pass";
     private static final String CORRECT_ADMIN_CODE = "pass777";
 
-    private JwtRequest jwtRequest;
+    private UserDto userDTO;
 
     @BeforeEach
     void setUp() {
-        jwtRequest = new JwtRequest();
-        jwtRequest.setUsername(TEST_USERNAME);
-        jwtRequest.setPassword(TEST_PASSWORD);
-        jwtRequest.setEmail(TEST_EMAIL);
+        userDTO = new UserDto();
+        userDTO.setUsername(TEST_USERNAME);
+        userDTO.setPassword(TEST_PASSWORD);
+        userDTO.setEmail(TEST_EMAIL);
     }
 
     @Test
     void register_shouldSaveNewUser_whenUsernameDoesNotExist() {
         when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn(ENCODED_PASSWORD);
 
-        authService.register(jwtRequest);
+        authService.register(userDTO);
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
         verify(authRepo).save(captor.capture());
@@ -65,7 +65,7 @@ class AuthServiceTest {
         when(authRepo.existsByUsername(TEST_USERNAME))
                 .thenReturn(true);
 
-        assertThatThrownBy(() -> authService.register(jwtRequest))
+        assertThatThrownBy(() -> authService.register(userDTO))
                 .isInstanceOf(UsernameAlreadyExistsException.class)
                 .hasMessageContaining(TEST_USERNAME);
 
@@ -77,7 +77,7 @@ class AuthServiceTest {
         when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn(ENCODED_PASSWORD);
         when(config.getAdminCode()).thenReturn(CORRECT_ADMIN_CODE);
 
-        authService.adminRegister(jwtRequest, "pass777");
+        authService.adminRegister(userDTO, "pass777");
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
         verify(authRepo).save(captor.capture());
@@ -93,7 +93,7 @@ class AuthServiceTest {
     void adminRegister_shouldThrowIncorrectPasswordException_whenAdminCodeIsIncorrect() {
         when(config.getAdminCode()).thenReturn(CORRECT_ADMIN_CODE);
 
-        assertThatThrownBy(() -> authService.adminRegister(jwtRequest, "incorrect code"))
+        assertThatThrownBy(() -> authService.adminRegister(userDTO, "incorrect code"))
                 .isInstanceOf(IncorrectPasswordException.class);
 
         verify(authRepo, never()).save(any());

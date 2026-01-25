@@ -1,5 +1,6 @@
 package com.example.task_manager.service;
 
+import com.example.task_manager.mapper.TaskMapper;
 import com.example.task_manager.repo.AuthRepo;
 import com.example.task_manager.dto.task.TaskDto;
 import com.example.task_manager.exception.NotEnoughRightException;
@@ -20,9 +21,11 @@ import java.util.List;
 public class TaskManagerService {
     private final TaskManagerRepo taskManagerRepo;
     private final AuthRepo authRepo;
+    private final TaskMapper taskMapper;
 
-    public List<Task> getAllTasks() {
-        return taskManagerRepo.findAll();
+    public List<TaskDto> getAllTasks() {
+        List<Task> allTasks = taskManagerRepo.findAll();
+        return taskMapper.taskDtos(allTasks);
     }
 
     public void createTask(TaskDto taskDto, String username) {

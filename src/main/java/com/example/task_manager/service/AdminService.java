@@ -1,7 +1,9 @@
 package com.example.task_manager.service;
 
+import com.example.task_manager.dto.user.UserDto;
 import com.example.task_manager.exception.SelfDeleteException;
 import com.example.task_manager.exception.UserWithIdNotExistsException;
+import com.example.task_manager.mapper.UserMapper;
 import com.example.task_manager.repo.AuthRepo;
 import com.example.task_manager.model.user.User;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +19,11 @@ import java.util.List;
 public class AdminService {
     private final AuthRepo authRepo;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
-    public List<User> getAllUsers() {
-        return authRepo.findAll();
+    public List<UserDto> getAllUsers() {
+        List<User> allUsers = authRepo.findAll();
+        return userMapper.userDtos(allUsers);
     }
 
     public void updateUserInformation(Long userId, User user) {
