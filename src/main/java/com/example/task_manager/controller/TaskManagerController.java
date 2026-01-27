@@ -1,20 +1,18 @@
 package com.example.task_manager.controller;
 
 import com.example.task_manager.dto.task.TaskDto;
-import com.example.task_manager.exception.advice.GlobalExceptionHandler;
-import com.example.task_manager.mapper.TaskMapper;
-import com.example.task_manager.model.task.Task;
+import com.example.task_manager.dto.task.TaskWithUsernameDto;
+import com.example.task_manager.pagination.PageResponse;
 import com.example.task_manager.service.TaskManagerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -38,8 +36,10 @@ public class TaskManagerController {
     @GetMapping
     @ResponseStatus(OK)
     @PreAuthorize("hasAuthority('task:read')")
-    public List<TaskDto> getAllTasks() {
-        return taskManagerService.getAllTasks();
+    public PageResponse<TaskWithUsernameDto> getAllTasks(
+            @PageableDefault(sort = "dueDate", direction = Sort.Direction.ASC)
+            Pageable pageable) {
+        return taskManagerService.getAllTasks(pageable);
     }
 
     @PostMapping

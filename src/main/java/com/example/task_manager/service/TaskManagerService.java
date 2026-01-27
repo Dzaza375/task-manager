@@ -1,6 +1,10 @@
 package com.example.task_manager.service;
 
-import com.example.task_manager.mapper.TaskMapper;
+import com.example.task_manager.dto.task.TaskWithUsernameDto;
+import com.example.task_manager.mapper.TaskProjectionMapper;
+import com.example.task_manager.pagination.PageResponse;
+import com.example.task_manager.pagination.PageableValidator;
+import com.example.task_manager.projection.TaskWithUsernameProjection;
 import com.example.task_manager.repo.AuthRepo;
 import com.example.task_manager.dto.task.TaskDto;
 import com.example.task_manager.exception.NotEnoughRightException;
@@ -10,10 +14,10 @@ import com.example.task_manager.model.task.Task;
 import com.example.task_manager.repo.TaskManagerRepo;
 import com.example.task_manager.model.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -21,11 +25,18 @@ import java.util.List;
 public class TaskManagerService {
     private final TaskManagerRepo taskManagerRepo;
     private final AuthRepo authRepo;
-    private final TaskMapper taskMapper;
+    private final PageableValidator pageableValidator;
+    private final TaskProjectionMapper taskProjectionMapper;
 
-    public List<TaskDto> getAllTasks() {
-        List<Task> allTasks = taskManagerRepo.findAll();
-        return taskMapper.taskDtos(allTasks);
+    @Transactional(readOnly = true)
+    public PageResponse<TaskWithUsernameDto> getAllTasks(Pageable pageable) {
+        Pageable validated = pageableValidator.validate(pageable);
+
+        Page<TaskWithUsernameProjection> page = taskManagerRepo.findAllBy(validated);
+
+        Page<TaskWithUsernameDto> dtoPage = page.map(taskProjectionMapper::toDto);
+
+        return PageResponse.from(dtoPage);
     }
 
     public void createTask(TaskDto taskDto, String username) {

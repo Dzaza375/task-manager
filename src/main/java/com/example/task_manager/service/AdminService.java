@@ -21,6 +21,7 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
+    @Transactional(readOnly = true)
     public List<UserDto> getAllUsers() {
         List<User> allUsers = authRepo.findAll();
         return userMapper.userDtos(allUsers);

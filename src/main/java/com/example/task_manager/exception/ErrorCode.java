@@ -10,5 +10,6 @@ public enum ErrorCode {
     SELF_DELETE,
     ALREADY_EXISTS,
     USER_NOT_FOUND,
-    INVALID_TOKEN
+    INVALID_TOKEN,
+    INCORRECT_SORTING
 }
