@@ -1,10 +1,9 @@
 package com.example.task_manager.service;
 
-import com.example.task_manager.dto.task.TaskWithUsernameDto;
-import com.example.task_manager.mapper.TaskProjectionMapper;
+import com.example.task_manager.filters.TaskFilter;
+import com.example.task_manager.mapper.TaskMapper;
 import com.example.task_manager.pagination.PageResponse;
 import com.example.task_manager.pagination.PageableValidator;
-import com.example.task_manager.projection.TaskWithUsernameProjection;
 import com.example.task_manager.repo.AuthRepo;
 import com.example.task_manager.dto.task.TaskDto;
 import com.example.task_manager.exception.NotEnoughRightException;
@@ -22,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
 class TaskManagerServiceTest {
     @Mock private TaskManagerRepo taskManagerRepo;
     @Mock private AuthRepo authRepo;
-    @Mock private TaskProjectionMapper taskProjectionMapper;
+    @Mock private TaskMapper taskMapper;
     @Mock private PageableValidator pageableValidator;
 
     @InjectMocks
@@ -92,32 +92,25 @@ class TaskManagerServiceTest {
 
         Pageable validatedPageable = pageable;
 
-        TaskWithUsernameProjection projection1 = mock(TaskWithUsernameProjection.class);
-        TaskWithUsernameProjection projection2 = mock(TaskWithUsernameProjection.class);
+        TaskFilter filter = new TaskFilter();
 
-        Page<TaskWithUsernameProjection> page = new PageImpl<>(List.of(projection1, projection2), pageable, 2);
+        Task task1 = mock(Task.class);
+        Task task2 = mock(Task.class);
 
-        TaskWithUsernameDto dto1 = new TaskWithUsernameDto(
-                TEST_TITLE,
-                TEST_DESCRIPTION,
-                TEST_DUE_DATE,
-                TEST_STATUS,
-                TEST_USERNAME
-        );
-        TaskWithUsernameDto dto2 = new TaskWithUsernameDto(
-                TEST_TITLE,
-                TEST_DESCRIPTION,
-                TEST_DUE_DATE,
-                TEST_STATUS,
-                TEST_USERNAME
-        );
+        Page<Task> page = new PageImpl<>(List.of(task1, task2), pageable, 2);
+
+        TaskDto dto1 = new TaskDto();
+        TaskDto dto2 = new TaskDto();
 
         when(pageableValidator.validate(pageable)).thenReturn(validatedPageable);
-        when(taskManagerRepo.findAllBy(validatedPageable)).thenReturn(page);
-        when(taskProjectionMapper.toDto(projection1)).thenReturn(dto1);
-        when(taskProjectionMapper.toDto(projection2)).thenReturn(dto2);
+        when(taskManagerRepo.findAll(any(Specification.class), eq(validatedPageable)))
+                .thenReturn(page);
 
-        PageResponse<TaskWithUsernameDto> response = taskManagerService.getAllTasks(pageable);
+        when(taskMapper.taskDto(task1)).thenReturn(dto1);
+        when(taskMapper.taskDto(task2)).thenReturn(dto2);
+
+        PageResponse<TaskDto> response =
+                taskManagerService.getAllTasks(filter, pageable);
 
         assertThat(response.items()).hasSize(2);
         assertThat(response.items()).containsExactly(dto1, dto2);
@@ -125,9 +118,9 @@ class TaskManagerServiceTest {
         assertThat(response.totalPages()).isEqualTo(1);
         assertThat(response.hasNext()).isFalse();
 
-        verify(taskManagerRepo).findAllBy(validatedPageable);
-        verify(taskProjectionMapper).toDto(projection1);
-        verify(taskProjectionMapper).toDto(projection2);
+        verify(taskManagerRepo).findAll(any(Specification.class), eq(validatedPageable));
+        verify(taskMapper).taskDto(task1);
+        verify(taskMapper).taskDto(task2);
         verify(pageableValidator).validate(pageable);
     }
 

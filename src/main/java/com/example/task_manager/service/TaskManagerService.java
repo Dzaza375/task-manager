@@ -1,6 +1,9 @@
 package com.example.task_manager.service;
 
 import com.example.task_manager.dto.task.TaskWithUsernameDto;
+import com.example.task_manager.filters.TaskFilter;
+import com.example.task_manager.filters.TaskSpecs;
+import com.example.task_manager.mapper.TaskMapper;
 import com.example.task_manager.mapper.TaskProjectionMapper;
 import com.example.task_manager.pagination.PageResponse;
 import com.example.task_manager.pagination.PageableValidator;
@@ -16,6 +19,7 @@ import com.example.task_manager.model.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +30,17 @@ public class TaskManagerService {
     private final TaskManagerRepo taskManagerRepo;
     private final AuthRepo authRepo;
     private final PageableValidator pageableValidator;
-    private final TaskProjectionMapper taskProjectionMapper;
+    private final TaskMapper taskMapper;
 
     @Transactional(readOnly = true)
-    public PageResponse<TaskWithUsernameDto> getAllTasks(Pageable pageable) {
+    public PageResponse<TaskDto> getAllTasks(TaskFilter filter, Pageable pageable) {
         Pageable validated = pageableValidator.validate(pageable);
 
-        Page<TaskWithUsernameProjection> page = taskManagerRepo.findAllBy(validated);
+        Specification<Task> spec = TaskSpecs.build(filter);
 
-        Page<TaskWithUsernameDto> dtoPage = page.map(taskProjectionMapper::toDto);
+        Page<Task> page = taskManagerRepo.findAll(spec, validated);
+
+        Page<TaskDto> dtoPage = page.map(taskMapper::taskDto);
 
         return PageResponse.from(dtoPage);
     }

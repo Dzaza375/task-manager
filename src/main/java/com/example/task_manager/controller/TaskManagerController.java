@@ -1,7 +1,7 @@
 package com.example.task_manager.controller;
 
 import com.example.task_manager.dto.task.TaskDto;
-import com.example.task_manager.dto.task.TaskWithUsernameDto;
+import com.example.task_manager.filters.TaskFilter;
 import com.example.task_manager.pagination.PageResponse;
 import com.example.task_manager.service.TaskManagerService;
 import jakarta.validation.Valid;
@@ -36,10 +36,11 @@ public class TaskManagerController {
     @GetMapping
     @ResponseStatus(OK)
     @PreAuthorize("hasAuthority('task:read')")
-    public PageResponse<TaskWithUsernameDto> getAllTasks(
+    public PageResponse<TaskDto> getAllTasks(
+            TaskFilter filter,
             @PageableDefault(sort = "dueDate", direction = Sort.Direction.ASC)
             Pageable pageable) {
-        return taskManagerService.getAllTasks(pageable);
+        return taskManagerService.getAllTasks(filter, pageable);
     }
 
     @PostMapping
